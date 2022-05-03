@@ -2,13 +2,13 @@
   <div class="center-layout">
     <navigator />
     <div class="add-content">
-      <el-page-header @back="goBack" content="新增教学活动"> </el-page-header>
+      <el-page-header @back="goBack" :content="title"> </el-page-header>
       <el-form ref="form" :model="form" label-width="80px" class="form">
         <el-form-item label="名称">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="类型">
-          <el-select v-model="form.type" placeholder="请选择新增教学类型">
+          <el-select v-model="form.type" placeholder="请选择教学类型">
             <el-option label="新增课程" :value="0"></el-option>
             <el-option label="新增考试" :value="1"></el-option>
             <el-option label="新增实验" :value="2"></el-option>
@@ -46,7 +46,7 @@
           </el-upload>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+          <el-button type="primary" @click="onSubmit">{{ button }}</el-button>
           <el-button @click="$router.go(-1)">取消</el-button>
         </el-form-item>
       </el-form>
@@ -75,7 +75,9 @@ export default {
   },
   data() {
     return {
-      title: '新增',
+      title: '',
+      button: '',
+      id: '',
       pay: false,
       form: {
         name: '',
@@ -185,21 +187,76 @@ export default {
       this.form.create_time = this.getDate();
 
       // 发送给后台
-      this.$axios.post('/api/class/add', this.form).then((res) => {
-        if (res.data.code === 'SUCCESS') {
-          this.$message({
-            message: res.data.msg,
-            type: 'success',
-          });
-          this.$router.push('/class-manage');
-        } else {
-          this.$message({
-            message: res.data.msg,
-            type: 'warning',
-          });
-        }
-      });
+      if (this.$route.path === '/add') {
+        this.$axios.post('/api/class/add', this.form).then((res) => {
+          if (res.data.code === 'SUCCESS') {
+            this.$message({
+              message: res.data.msg,
+              type: 'success',
+            });
+            this.$router.push('/class-manage');
+          } else {
+            this.$message({
+              message: res.data.msg,
+              type: 'warning',
+            });
+          }
+        });
+      } else {
+        this.form.id = this.id;
+        this.$axios.post('/api/class/update', this.form).then((res) => {
+          if (res.data.code === 'SUCCESS') {
+            this.$message({
+              message: res.data.msg,
+              type: 'success',
+            });
+            this.$router.push('/class-manage');
+          } else {
+            this.$message({
+              message: res.data.msg,
+              type: 'warning',
+            });
+          }
+        });
+      }
     },
+  },
+
+  beforeMount() {
+    if (this.$route.path === '/add') {
+      this.button = '立即创建';
+      this.title = '新增教学活动';
+    } else {
+      this.button = '立即修改';
+      this.title = '修改教学活动';
+      this.id = this.$route.params.id;
+      this.$axios
+        .get('/api/class/selectById', {
+          params: {
+            id: this.id,
+          },
+        })
+        .then((res) => {
+          if (res.data.code === 'SUCCESS') {
+            let data = res.data.data;
+            this.form.name = data.class_name;
+            this.form.type = data.class_type;
+            this.form.desc = data.description;
+            this.form.poster = data.poster;
+            if (data.money === 0) {
+              this.pay = false;
+            } else {
+              this.pay = true;
+              this.form.money = data.money;
+            }
+          } else {
+            this.$message({
+              message: res.data.msg,
+              type: 'warning',
+            });
+          }
+        });
+    }
   },
 };
 </script>

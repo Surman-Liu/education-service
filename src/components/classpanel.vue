@@ -1,23 +1,29 @@
 <template>
   <div class="class-info">
-    <img src="@/assets/images/class.jpg" alt="" class="class-img" />
-    <div class="icon" v-if="type === 'edit'">
+    <img :src="poster" alt="" class="class-img" />
+    <div class="icon" v-if="type === 'edit'" @click="edit">
       <i class="el-icon-edit-outline"></i>
       <span>编辑</span>
     </div>
-    <div class="icon" v-if="type === 'delete'">
+    <div class="icon" v-if="type === 'delete'" @click="remove">
       <i class="el-icon-folder-remove"></i>
       <span>删除</span>
     </div>
     <div class="class-content">
       <div class="name">{{ name }}</div>
-      <div>
-        <span class="time">{{ time }}</span>
-        <span class="author">{{ author }}</span>
+      <div class="info">
+        <span>{{ time }}</span>
+        <span>{{ author }}</span>
       </div>
       <div class="buttom">
         <span class="price">￥{{ price }}</span>
-        <span class="follow">{{ followers }}</span>
+        <span
+          class="status"
+          :style="{
+            color: statusObj[status].color,
+          }"
+          >{{ statusObj[status].text }}</span
+        >
       </div>
     </div>
   </div>
@@ -27,11 +33,64 @@
 export default {
   props: {
     type: '',
+    id: '',
     name: '',
     time: '',
     author: '',
-    price: 0,
-    followers: 0,
+    price: '',
+    status: '',
+    poster: '',
+  },
+  data() {
+    return {
+      statusObj: {
+        1: {
+          color: '#91cc75',
+          text: '已发布',
+        },
+        2: {
+          color: '#5470c6',
+          text: '待审核',
+        },
+        3: {
+          color: '#fe6f6f',
+          text: '已拒绝',
+        },
+      },
+    };
+  },
+  methods: {
+    edit() {
+      this.$router.push(`edit/${this.id}`);
+    },
+    remove() {
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        this.$axios
+          .get('/api/class/delete', {
+            params: {
+              id: this.id,
+            },
+          })
+          .then((res) => {
+            if (res.data.code === 'SUCCESS') {
+              this.$message({
+                type: 'success',
+                message: res.data.msg,
+              });
+              this.$router.go(0);
+            } else {
+              this.$message({
+                message: res.data.msg,
+                type: 'warning',
+              });
+            }
+          });
+      });
+    },
   },
 };
 </script>
@@ -82,14 +141,14 @@ export default {
       font-weight: 600;
       color: #535353;
     }
-    .time {
+    .info {
+      display: flex;
+      justify-content: space-between;
       font-size: 12px;
+      margin-top: 7px;
       color: gray;
     }
-    .author {
-      color: #5fc690;
-      font-size: 12px;
-    }
+
     .buttom {
       margin: 10px 0;
       .price {
@@ -97,11 +156,10 @@ export default {
         font-weight: 600;
         color: #535353;
       }
-      .follow {
-        line-height: 20px;
+      .status {
         float: right;
-        font-size: 12px;
-        color: gray;
+        font-size: 14px;
+        padding: 0 5px;
       }
     }
   }

@@ -60,22 +60,28 @@
         </div>
         <div class="class-satisfy">
           <i class="el-icon-d-arrow-right title">{{ title }}</i>
-          <div class="list">
+          <div class="list" v-if="classList.length !== 0">
             <div class="class-info" v-for="item in classList" :key="item.id">
               <classpanel
                 :type="type"
-                :name="item.name"
-                :time="item.time"
-                :author="item.author"
-                :price="item.price"
-                :followers="item.followers"
+                :id="item.id"
+                :name="item.class_name"
+                :time="item.create_time"
+                :author="item.teacher_name"
+                :price="item.money"
+                :status="item.status"
+                :poster="item.poster"
               />
             </div>
           </div>
+          <el-empty v-else description="内容为空哦~"></el-empty>
           <el-pagination
             layout="prev, pager, next"
-            :total="50"
+            :total="pageTotal"
             class="pagination"
+            :page-size="8"
+            :current-page="pageNum"
+            @current-change="pageChange"
           >
           </el-pagination>
         </div>
@@ -102,6 +108,8 @@ export default {
       type: '',
       showCancel: false,
       index: 1,
+      pageTotal: 0,
+      pageNum: 1,
       optionMenu: {
         1: {
           title: '课程管理',
@@ -125,94 +133,23 @@ export default {
           delete: '删除实验',
         },
       },
-      classList: [
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-      ],
-      pieData: [
-        {
-          value: 335,
-          name: '已发布',
-        },
-        {
-          value: 148,
-          name: '已拒绝',
-        },
-        {
-          value: 188,
-          name: '审核中',
-        },
-      ],
+      classList: [],
+      classType: {
+        publish: '已发布',
+        audit: '审核中',
+        refuse: '已拒绝',
+      },
+      pieData: [],
     };
   },
   methods: {
     selectMenu(index) {
       this.title = this.optionMenu[index].title;
       this.index = index;
-      this.initPieChart();
+      this.pageNum = 1;
+      this.loadPieData();
       this.initScatterChart();
+      this.loadData();
     },
     myProfile() {
       if (!this.isLogin) {
@@ -220,6 +157,26 @@ export default {
       } else {
         this.$router.push(`/profile/${this.user.job}/${this.user.id}`);
       }
+    },
+    loadPieData() {
+      this.$axios
+        .get('/api/class/classNum', {
+          params: {
+            teacher_id: this.user.id,
+            class_type: this.index,
+          },
+        })
+        .then((res) => {
+          let data = res.data.data;
+          this.pieData = [];
+          Object.keys(data).forEach((key) => {
+            let item = {};
+            item.value = data[key];
+            item.name = this.classType[key];
+            this.pieData.push(item);
+          });
+          this.initPieChart();
+        });
     },
     initPieChart() {
       let myChart = echarts.init(document.getElementById('pie'));
@@ -300,10 +257,24 @@ export default {
       this.$router.push(`/add`);
     },
     edit() {
+      if (this.classList.length === 0) {
+        this.$message({
+          message: '没有可以编辑的列表',
+          type: 'warning',
+        });
+        return;
+      }
       this.type = 'edit';
       this.showCancel = true;
     },
     delet() {
+      if (this.classList.length === 0) {
+        this.$message({
+          message: '没有可以编辑的列表',
+          type: 'warning',
+        });
+        return;
+      }
       this.showCancel = true;
       this.type = 'delete';
     },
@@ -311,12 +282,40 @@ export default {
       this.showCancel = false;
       this.type = '';
     },
-    loadData(){
-    }
+    loadData() {
+      if (!this.user.id) {
+        this.$message({
+          message: '请登录',
+          type: 'warning',
+        });
+      }
+      let params = {
+        teacher_id: this.user.id,
+        class_type: this.index,
+        page: this.pageNum,
+        pageSize: 8,
+      };
+      this.$axios.post('/api/class/searchClass', params).then((res) => {
+        if (res.data.code === 'SUCCESS') {
+          this.pageTotal = res.data.data.total;
+          this.classList = res.data.data.content;
+        } else {
+          this.$message({
+            message: res.data.msg,
+            type: 'warning',
+          });
+        }
+      });
+    },
+    pageChange(page) {
+      this.pageNum = page;
+      this.loadData();
+    },
   },
   mounted() {
-    this.initPieChart();
+    this.loadPieData();
     this.initScatterChart();
+    this.loadData();
   },
 };
 </script>
@@ -403,8 +402,16 @@ export default {
   .list {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     padding-bottom: 30px;
+    .class-info {
+      margin-right: 17px;
+    }
+  }
+  .empty {
+    height: 20px;
+    text-align: center;
+    font-size: 16px;
+    color: grey;
   }
   .pagination {
     text-align: right;

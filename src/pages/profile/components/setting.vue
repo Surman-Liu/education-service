@@ -116,6 +116,7 @@ export default {
             message: res.data.msg,
             type: 'success',
           });
+          this.$store.state.user.user = res.data.data;
           this.show = false;
           this.info = {};
         } else {

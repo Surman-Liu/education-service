@@ -29,66 +29,56 @@
         <div class="data-content">
           <div class="data-items">
             <div
-              :class="{ 'data-item': true, active: index === 0 ? true : false }"
-              @click="handleClick(0)"
-            >
-              <div class="num">3</div>
-              <div class="text">课程</div>
-            </div>
-            <div
               :class="{ 'data-item': true, active: index === 1 ? true : false }"
               @click="handleClick(1)"
             >
-              <div class="num">100</div>
-              <div class="text">考试</div>
+              <div class="num">{{ classNum }}</div>
+              <div class="text">课程</div>
             </div>
             <div
               :class="{ 'data-item': true, active: index === 2 ? true : false }"
               @click="handleClick(2)"
             >
-              <div class="num">20</div>
+              <div class="num">{{ examNum }}</div>
+              <div class="text">考试</div>
+            </div>
+            <div
+              :class="{ 'data-item': true, active: index === 3 ? true : false }"
+              @click="handleClick(3)"
+            >
+              <div class="num">{{ trailNum }}</div>
               <div class="text">实验</div>
             </div>
           </div>
-          <el-button class="manage-button">管理</el-button>
         </div>
       </div>
       <div class="class-list">
         <div class="center">
           <div class="toolbar">
             <div class="title">{{ title }}</div>
-            <div>
-              <span class="sort">Sort by:</span>
-              <el-select
-                v-model="sortOrder"
-                placeholder="请选择"
-                class="sort-selector"
-              >
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                </el-option>
-              </el-select>
-            </div>
           </div>
-          <div class="list">
+          <div class="list" v-if="classList.length !== 0">
             <div class="class-info" v-for="item in classList" :key="item.id">
               <classpanel
-                :name="item.name"
-                :time="item.time"
-                :author="item.author"
-                :price="item.price"
-                :followers="item.followers"
+                :type="type"
+                :id="item.id"
+                :name="item.class_name"
+                :time="item.create_time"
+                :author="item.teacher_name"
+                :price="item.money"
+                :status="item.status"
+                :poster="item.poster"
               />
             </div>
           </div>
+          <el-empty v-else description="内容为空哦~"></el-empty>
           <el-pagination
             layout="prev, pager, next"
-            :total="50"
+            :total="pageTotal"
             class="pagination"
+            :page-size="8"
+            :current-page="pageNum"
+            @current-change="pageChange"
           >
           </el-pagination>
         </div>
@@ -115,107 +105,86 @@ export default {
       showEdit: false,
       showMore: false,
       sortOrder: 0,
-      index: 0,
+      index: 1,
       title: '我的课程',
       user: this.$store.state.user.user,
       allowEdit: false,
       id: this.$route.params.id,
       job: this.$route.params.job,
-      options: [
-        {
-          value: 0,
-          label: 'Newest first',
-        },
-        {
-          value: 2,
-          label: 'Popular first',
-        },
-        {
-          value: 3,
-          label: 'Praise first',
-        },
-      ],
-      classList: [
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-        {
-          img: '@/assets/images/class.jpg',
-          name: '高等数学',
-          time: '2020-03-30',
-          author: 'Surman',
-          price: 100,
-          followers: 1000,
-        },
-      ],
+      pageNum: 1,
+      pageTotal: 0,
+      classList: [],
       indexOption: {
-        0: '我的课程',
-        1: '我的考试',
-        2: '我的实验',
+        1: '我的课程',
+        2: '我的考试',
+        3: '我的实验',
       },
+      classNum: 0,
+      examNum: 0,
+      trailNum: 0,
     };
   },
   methods: {
     handleClick(index) {
       this.index = index;
       this.title = this.indexOption[index];
+      this.loadData();
+    },
+    pageChange(page) {
+      this.pageNum = page;
+      this.loadData();
+    },
+    loadData() {
+      if (!this.user.id) {
+        this.$message({
+          message: '请登录',
+          type: 'warning',
+        });
+      }
+      let params = {
+        teacher_id: this.user.id,
+        class_type: this.index,
+        page: this.pageNum,
+        pageSize: 8,
+      };
+      this.$axios.post('/api/class/searchClass', params).then((res) => {
+        if (res.data.code === 'SUCCESS') {
+          this.pageTotal = res.data.data.total;
+          this.classList = res.data.data.content;
+        } else {
+          this.$message({
+            message: res.data.msg,
+            type: 'warning',
+          });
+        }
+      });
+    },
+    loadClassCount() {
+      this.$axios
+        .get('/api/class/typeCount', {
+          params: {
+            teacher_id: this.user.id,
+          },
+        })
+        .then((res) => {
+          if (res.data.code === 'SUCCESS') {
+            let data = res.data.data;
+            this.classNum = data.classes;
+            this.examNum = data.exam;
+            this.trailNum = data.trail;
+          } else {
+            this.$message({
+              message: res.data.msg,
+              type: 'warning',
+            });
+          }
+        });
     },
   },
   beforeMount() {
     this.allowEdit = this.id == this.user.id && this.job == this.user.job;
+    this.loadClassCount();
+    this.loadData();
   },
 };
 </script>
@@ -367,9 +336,10 @@ export default {
       .list {
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
-        cursor: pointer;
         padding-bottom: 30px;
+        .class-info {
+          margin-right: 20px;
+        }
       }
       .pagination {
         text-align: right;
