@@ -142,12 +142,21 @@ export default {
         });
       }
       let params = {
-        teacher_id: this.user.id,
         class_type: this.index,
         page: this.pageNum,
         pageSize: 8,
       };
-      this.$axios.post('/api/class/searchClass', params).then((res) => {
+      let url = '';
+      if (this.user.job == 1) {
+        // 教师
+        params.teacher_id = this.user.id;
+        url = '/api/class/searchClass';
+      } else {
+        // 学生
+        params.student_id = this.user.id;
+        url = 'api/student/selectedClass';
+      }
+      this.$axios.post(url, params).then((res) => {
         if (res.data.code === 'SUCCESS') {
           this.pageTotal = res.data.data.total;
           this.classList = res.data.data.content;
@@ -160,11 +169,20 @@ export default {
       });
     },
     loadClassCount() {
+      let params = {};
+      let url = '';
+      if (this.user.job == 1) {
+        // 教师
+        params.teacher_id = this.user.id;
+        url = '/api/class/typeCount';
+      } else {
+        // 学生
+        params.student_id = this.user.id;
+        url = '/api/student/typeCount';
+      }
       this.$axios
-        .get('/api/class/typeCount', {
-          params: {
-            teacher_id: this.user.id,
-          },
+        .get(url, {
+          params,
         })
         .then((res) => {
           if (res.data.code === 'SUCCESS') {

@@ -220,6 +220,10 @@ export default {
           label: '老师',
           value: '1',
         },
+        {
+          label: '管理员',
+          value: '3',
+        },
       ],
     };
   },
