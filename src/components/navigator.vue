@@ -13,8 +13,19 @@
         <span> 考试平台 </span>
         <span> 实验平台 </span>
         <span> 教学评价 </span>
-        <span :class="{ active: active === 'class-manage' }" v-if="user.job == 1" @click="$router.push('/class-manage')">
+        <span
+          :class="{ active: active === 'class-manage' }"
+          v-if="user.job == 1"
+          @click="$router.push('/class-manage')"
+        >
           课程管理
+        </span>
+        <span
+          :class="{ active: active === 'admin-manage' }"
+          v-if="user.job == 2"
+          @click="$router.push('/admin-manage')"
+        >
+          管理平台
         </span>
         <div class="login-option" v-if="isLogin === false">
           <el-button type="success" round class="login" @click="login">
@@ -109,6 +120,7 @@ export default {
       this.$store.commit('user/setIsLogin', false);
       this.$store.commit('user/setUser', {});
       this.isLogin = false;
+      this.$router.push('/');
     },
   },
   // 挂在前检查用户是否登录

@@ -301,8 +301,10 @@ export default {
       }
       if (this.login.loginJob === '0') {
         url = 'student';
-      } else {
+      } else if (this.login.loginJob === '1') {
         url = 'teacher';
+      } else {
+        url = 'admin';
       }
       this.$axios
         .get(`/api/${url}/login`, {
@@ -354,10 +356,13 @@ export default {
         });
         return;
       }
+
       if (this.message.messageJob === '0') {
         url = 'student';
-      } else {
+      } else if (this.message.messageJob === '0') {
         url = 'teacher';
+      } else {
+        url = 'admin';
       }
       this.$axios
         .get(`/api/${url}/messageLogin`, {
@@ -432,8 +437,10 @@ export default {
       }
       if (this.form.forgetJob === '0') {
         url = 'student';
-      } else {
+      } else if (this.form.forgetJob === '1') {
         url = 'teacher';
+      } else {
+        url = 'admin';
       }
       this.$axios
         .get(`/api/${url}/forgetPassword`, {
