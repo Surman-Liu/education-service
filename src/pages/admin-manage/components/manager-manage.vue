@@ -1,9 +1,6 @@
 <template>
   <div>
     <div class="toobar">
-      <div class="button">
-        <el-button type="primary" plain>批量删除</el-button>
-      </div>
       <div class="search">
         <el-input v-model="input" placeholder="请输入内容"></el-input>
         <el-button icon="el-icon-search" circle @click="search"></el-button>
@@ -41,13 +38,10 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
-            >编辑</el-button
-          >
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete(scope.row.id)"
             >删除</el-button
           >
         </template>
@@ -71,7 +65,7 @@ export default {
     return {
       pageNum: 1,
       pageTotal: '',
-      input:'',
+      input: '',
       tableData: [],
     };
   },
@@ -129,6 +123,34 @@ export default {
             type: 'warning',
           });
         }
+      });
+    },
+    handleDelete(id) {
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        this.$axios
+          .get('/api/admin/delete', {
+            params: {
+              id,
+            },
+          })
+          .then((res) => {
+            if (res.data.code === 'SUCCESS') {
+              this.$message({
+                type: 'success',
+                message: res.data.msg,
+              });
+              this.$router.go(0);
+            } else {
+              this.$message({
+                message: res.data.msg,
+                type: 'warning',
+              });
+            }
+          });
       });
     },
   },

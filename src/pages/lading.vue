@@ -1,9 +1,9 @@
 <template>
   <div class="center-layout">
-    <navigator />
+    <navigator active="lading" />
     <full-page :options="options">
       <div class="section content">
-        <el-alert v-if="showWarning" type="warning">{{ warningText }}</el-alert>
+        <!-- <el-alert v-if="showWarning" type="warning">{{ warningText }}</el-alert> -->
         <el-row>
           <el-col :span="12">
             <div class="content-left">
@@ -12,12 +12,14 @@
               <div class="title">Stay intelligence</div>
               <div class="sub-title">Space | 智慧教学服务平台</div>
               <div class="search">
-                <el-input
+                <!-- <el-input
                   v-model="search"
                   placeholder="快输入感兴趣的内容吧"
                   maxlength="18"
-                ></el-input>
-                <el-button round>Get started</el-button>
+                ></el-input> -->
+                <el-button round @click="start" v-if="!isLogin"
+                  >Get started</el-button
+                >
               </div>
             </div>
           </el-col>
@@ -51,7 +53,9 @@
               <div class="title">Let education</div>
               <div class="title">Stay personalized</div>
               <div class="sub-title">Space | 智慧教学服务平台</div>
-              <el-button round class="button">Get Started</el-button>
+              <el-button round class="button" @click="start" v-if="!isLogin"
+                >Get Started</el-button
+              >
             </div>
           </el-col>
         </el-row>
@@ -65,7 +69,9 @@
               <div class="title">Let quality</div>
               <div class="title">Stay transparent</div>
               <div class="sub-title">Space | 智慧教学服务平台</div>
-              <el-button round class="button">Get Started</el-button>
+              <el-button round class="button" @click="start" v-if="!isLogin"
+                >Get Started</el-button
+              >
             </div>
           </el-col>
           <el-col :span="12">
@@ -92,6 +98,7 @@ import * as trailData from '@/assets/lotties/trail.json';
 export default {
   data() {
     return {
+      isLogin: this.$store.state.user.isLogin,
       showWarning: false,
       warningText: '',
       options: {
@@ -117,7 +124,11 @@ export default {
   components: {
     Navigator,
   },
-  method() {},
+  methods: {
+    start() {
+      this.$router.push('/login');
+    },
+  },
   beforeMount() {
     let user = this.$store.state.user.user;
     let isLogin = this.$store.state.user.isLogin;
@@ -181,8 +192,8 @@ export default {
     color: #005c3a;
   }
   button {
-    position: absolute;
-    left: 265px;
+    // position: absolute;
+    // left: 265px;
     border: none;
     background-color: #ffd75f;
     color: #fff;

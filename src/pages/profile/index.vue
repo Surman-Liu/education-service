@@ -151,10 +151,12 @@ export default {
         // 教师
         params.teacher_id = this.user.id;
         url = '/api/class/searchClass';
-      } else {
+      } else if (this.user.job == 0) {
         // 学生
         params.student_id = this.user.id;
         url = 'api/student/selectedClass';
+      } else {
+        return;
       }
       this.$axios.post(url, params).then((res) => {
         if (res.data.code === 'SUCCESS') {
@@ -175,10 +177,12 @@ export default {
         // 教师
         params.teacher_id = this.user.id;
         url = '/api/class/typeCount';
-      } else {
+      } else if (this.user.job == 0) {
         // 学生
         params.student_id = this.user.id;
         url = '/api/student/typeCount';
+      } else {
+        return;
       }
       this.$axios
         .get(url, {

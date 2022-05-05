@@ -6,7 +6,7 @@
         <!-- <span @click="teacher" :class="{ active: active === 'teacher' }">
         Teacher
       </span> -->
-        <span :class="{ active: active === 'class' }" @click="goToClass">
+        <span :class="{ active: active === 'lading' }" @click="goToClass">
           首页
         </span>
         <span> 教学平台 </span>
@@ -23,7 +23,7 @@
         <span
           :class="{ active: active === 'admin-manage' }"
           v-if="user.job == 2"
-          @click="$router.push('/admin-manage')"
+          @click="$router.push('/admin-manage/student-manage')"
         >
           管理平台
         </span>
@@ -109,7 +109,7 @@ export default {
       this.$router.push('/teacher');
     },
     goToClass() {
-      this.$router.push('/class');
+      this.$router.push('/lading');
     },
     profile() {
       this.$router.push(`/profile/${this.user.job}/${this.user.id}`);

@@ -37,7 +37,10 @@
             <div class="center" @click="myProfile">
               <el-avatar
                 :size="50"
-                src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+                :src="
+                  user.touxiang ||
+                  'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+                "
               ></el-avatar>
               <div class="name">{{ isLogin ? user.username : '请登录' }}</div>
             </div>

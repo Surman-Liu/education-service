@@ -13,7 +13,8 @@ import AdminManage from '@/pages/admin-manage/index';
 import StudentManage from '@/pages/admin-manage/components/student-manage.vue';
 import TeacherManage from '@/pages/admin-manage/components/teacher-manage.vue';
 import ManagerManage from '@/pages/admin-manage/components/manager-manage.vue';
-
+import ClassAuditing from '@/pages/admin-manage/components/class-auditing.vue';
+import ClassAudited from '@/pages/admin-manage/components/class-audited.vue';
 
 Vue.use(Router);
 
@@ -89,6 +90,14 @@ export default new Router({
         {
           path: 'manager-manage',
           component: ManagerManage,
+        },
+        {
+          path: 'class-auditing',
+          component: ClassAuditing,
+        },
+        {
+          path: 'class-audited',
+          component: ClassAudited,
         },
       ]
     }
