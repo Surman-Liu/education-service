@@ -2,7 +2,12 @@
   <div>
     <div class="toobar">
       <div class="search">
-        <el-input v-model="input" placeholder="请输入内容"></el-input>
+        <el-input
+          clearable
+          @clear="search"
+          v-model="input"
+          placeholder="请输入内容"
+        ></el-input>
         <el-button icon="el-icon-search" circle @click="search"></el-button>
       </div>
     </div>

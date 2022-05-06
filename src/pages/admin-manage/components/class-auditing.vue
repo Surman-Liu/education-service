@@ -2,7 +2,12 @@
   <div>
     <div class="toobar">
       <div class="search">
-        <el-input v-model="input" placeholder="请输入内容"></el-input>
+        <el-input
+          clearable
+          @clear="search"
+          v-model="input"
+          placeholder="请输入内容"
+        ></el-input>
         <el-button icon="el-icon-search" circle @click="search"></el-button>
       </div>
       <el-select
@@ -70,7 +75,10 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" @click="optionMenu(scope.row.id, 1)"
+          <el-button
+            size="mini"
+            type="primary"
+            @click="optionMenu(scope.row.id, 1)"
             >发布</el-button
           >
           <el-button

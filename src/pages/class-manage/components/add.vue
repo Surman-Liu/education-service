@@ -156,8 +156,8 @@ export default {
       }
     },
 
-    onSubmit(type) {
-      let user = this.$store.state.user.user;
+    onSubmit() {
+      let user = this.$localStorage.getItem('user');
       if (JSON.stringify(user) === '{}') {
         this.$message({
           message: '请先登录',

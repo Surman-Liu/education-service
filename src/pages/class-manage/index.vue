@@ -105,8 +105,8 @@ export default {
   },
   data() {
     return {
-      user: this.$store.state.user.user,
-      isLogin: this.$store.state.user.isLogin,
+      user: {},
+      isLogin: false,
       title: '课程管理',
       type: '',
       showCancel: false,
@@ -316,6 +316,8 @@ export default {
     },
   },
   mounted() {
+    this.user = this.$localStorage.getItem('user');
+    this.isLogin = this.$localStorage.getItem('isLogin');
     this.loadPieData();
     this.initScatterChart();
     this.loadData();

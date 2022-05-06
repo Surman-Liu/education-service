@@ -320,9 +320,7 @@ export default {
               type: 'success',
             });
             let user = res.data.data;
-            // 将用户信息存入vuex
-            this.$store.commit('user/setIsLogin', true);
-            this.$store.commit('user/setUser', user);
+            this.putStorage(user);
             this.$router.push('/');
           } else {
             this.$message({
@@ -378,9 +376,7 @@ export default {
               type: 'success',
             });
             let user = res.data.data;
-            // 将用户信息存入vuex
-            this.$store.commit('user/setIsLogin', true);
-            this.$store.commit('user/setUser', user);
+            this.putStorage(user);
             this.$router.push('/');
           } else {
             this.$message({
@@ -464,6 +460,22 @@ export default {
             });
           }
         });
+    },
+    // 缓存用户信息
+    putStorage(user) {
+      // 将用户信息存入vuex
+      this.$store.commit('user/setIsLogin', true);
+      this.$store.commit('user/setUser', user);
+      this.$localStorage.setItem({
+        name: 'user',
+        value: user,
+        expires: 1000 * 60 * 60 * 24 * 7,
+      });
+      this.$localStorage.setItem({
+        name: 'isLogin',
+        value: true,
+        expires: 1000 * 60 * 60 * 24 * 7,
+      });
     },
   },
 

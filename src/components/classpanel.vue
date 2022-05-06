@@ -18,6 +18,7 @@
       <div class="buttom">
         <span class="price">￥{{ price }}</span>
         <span
+          v-if="user.job == 1"
           class="status"
           :style="{
             color: statusObj[status].color,
@@ -57,6 +58,7 @@ export default {
           text: '已拒绝',
         },
       },
+      user: {},
     };
   },
   methods: {
@@ -91,6 +93,9 @@ export default {
           });
       });
     },
+  },
+  mounted() {
+    this.user = this.$localStorage.getItem('user');
   },
 };
 </script>

@@ -107,7 +107,7 @@ export default {
       sortOrder: 0,
       index: 1,
       title: '我的课程',
-      user: this.$store.state.user.user,
+      user: {},
       allowEdit: false,
       id: this.$route.params.id,
       job: this.$route.params.job,
@@ -204,6 +204,7 @@ export default {
     },
   },
   beforeMount() {
+    this.user = this.$localStorage.getItem('user');
     this.allowEdit = this.id == this.user.id && this.job == this.user.job;
     this.loadClassCount();
     this.loadData();

@@ -117,16 +117,21 @@ export default {
     exit() {
       // 将用户信息存入vuex
       this.dialogVisible = false;
-      this.$store.commit('user/setIsLogin', false);
-      this.$store.commit('user/setUser', {});
+      this.$localStorage.setItem({
+        name: 'isLogin',
+        value: false,
+        expires: 1000 * 60 * 60 * 24 * 7,
+      });
+      this.$localStorage.removeItem('user');
       this.isLogin = false;
+      this.$router.go(0);
       this.$router.push('/');
     },
   },
   // 挂在前检查用户是否登录
   beforeMount() {
-    this.isLogin = this.$store.state.user.isLogin;
-    this.user = this.$store.state.user.user;
+    this.isLogin = this.$localStorage.getItem('isLogin');
+    this.user = this.$localStorage.getItem('user');
   },
 };
 </script>

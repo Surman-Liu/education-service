@@ -64,7 +64,7 @@ export default {
         username: '',
         words: '',
         introduce: '',
-        phone: this.$store.state.user.user.phone,
+        phone: '',
       },
     };
   },
@@ -105,6 +105,8 @@ export default {
     },
     handleConfirm() {
       let url = '';
+      let user = this.$localStorage.getItem('user');
+      this.info.phone = user.phone;
       if (this.job === '0') {
         url = 'student';
       } else {
@@ -116,9 +118,14 @@ export default {
             message: res.data.msg,
             type: 'success',
           });
+          this.$localStorage.setItem({
+            name: 'user',
+            value: res.data.data,
+            expires: 1000 * 60 * 60 * 24 * 7,
+          });
           this.$store.state.user.user = res.data.data;
           this.show = false;
-          this.info = {};
+          this.$router.go(0);
         } else {
           this.$message({
             message: res.data.msg,
@@ -132,7 +139,8 @@ export default {
     },
   },
   beforeMount() {
-    let user = this.$store.state.user.user;
+    let user = this.$localStorage.getItem('user');
+    this.phone = user.phone;
     this.info.touxiang = user.touxiang;
     this.info.username = user.username;
     this.info.words = user.words;

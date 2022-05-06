@@ -2,12 +2,16 @@
   <div>
     <div class="toobar">
       <div class="search">
-        <el-input v-model="input" placeholder="请输入内容"></el-input>
+        <el-input
+          clearable
+          @clear="search"
+          v-model="input"
+          placeholder="请输入内容"
+        ></el-input>
         <el-button icon="el-icon-search" circle @click="search"></el-button>
       </div>
     </div>
     <el-table :data="tableData" stripe style="width: 100%" class="table">
-      <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column type="index" width="50" label="序号"> </el-table-column>
       <el-table-column prop="id" label="用户ID" width="100"> </el-table-column>
       <el-table-column prop="realname" label="真实姓名" width="130">

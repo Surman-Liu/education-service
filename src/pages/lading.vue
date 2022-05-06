@@ -8,6 +8,7 @@
           <el-col :span="12">
             <div class="content-left">
               <div class="name">"Space"</div>
+              <div class="name name1">智慧教学服务平台</div>
               <div class="title">Let Study</div>
               <div class="title">Stay intelligence</div>
               <div class="sub-title">Space | 智慧教学服务平台</div>
@@ -98,7 +99,7 @@ import * as trailData from '@/assets/lotties/trail.json';
 export default {
   data() {
     return {
-      isLogin: this.$store.state.user.isLogin,
+      isLogin: false,
       showWarning: false,
       warningText: '',
       options: {
@@ -130,19 +131,20 @@ export default {
     },
   },
   beforeMount() {
-    let user = this.$store.state.user.user;
-    let isLogin = this.$store.state.user.isLogin;
-    let status = user.status;
-    if (isLogin && status !== 3 && user.job === 1) {
-      this.showWarning = true;
-    }
-    if (isLogin && status === 1) {
-      this.warningText =
-        '亲爱的老师，您的信息正在审核中，暂时不支持发布课程等功能哦';
-    }
-    if (isLogin && status === 2) {
-      this.warningText = '亲爱的老师，您的信息未通过审核，请去主页查看详情吧';
-    }
+    this.isLogin = this.$localStorage.getItem('isLogin');
+    // let user = this.$store.state.user.user;
+    // let isLogin = this.$store.state.user.isLogin;
+    // let status = user.status;
+    // if (isLogin && status !== 3 && user.job === 1) {
+    //   this.showWarning = true;
+    // }
+    // if (isLogin && status === 1) {
+    //   this.warningText =
+    //     '亲爱的老师，您的信息正在审核中，暂时不支持发布课程等功能哦';
+    // }
+    // if (isLogin && status === 2) {
+    //   this.warningText = '亲爱的老师，您的信息未通过审核，请去主页查看详情吧';
+    // }
   },
 };
 </script>
