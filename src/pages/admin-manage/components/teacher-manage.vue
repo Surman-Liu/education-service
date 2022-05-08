@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import Clipboard from 'clipboard';
 export default {
   data() {
     return {
@@ -182,6 +183,9 @@ export default {
       border: none;
     }
   }
+}
+.btn {
+  cursor: pointer;
 }
 .pagination {
   margin-top: 20px;

@@ -10,7 +10,31 @@
         ></el-input>
         <el-button icon="el-icon-search" circle @click="search"></el-button>
       </div>
+      <el-button type="primary" @click="dialogFormVisible = true"
+        >新增</el-button
+      >
     </div>
+    <el-dialog
+      title="新增管理员"
+      :visible.sync="dialogFormVisible"
+      width="400px"
+    >
+      <el-form :model="form">
+        <el-form-item label="管理员昵称">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="form.phone" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="add">确 定</el-button>
+      </div>
+    </el-dialog>
     <el-table :data="tableData" stripe style="width: 100%">
       <el-table-column type="index" width="50" label="序号"> </el-table-column>
       <el-table-column prop="id" label="用户ID" width="100"> </el-table-column>
@@ -64,6 +88,8 @@
 </template>
 
 <script>
+import { isEmpty, validatemobile } from '@/utils/validator';
+import Clipboard from 'clipboard';
 export default {
   data() {
     return {
@@ -71,9 +97,17 @@ export default {
       pageTotal: '',
       input: '',
       tableData: [],
+      dialogFormVisible: false,
+      form: {
+        username: '',
+        phone: '',
+        password: '',
+      },
     };
   },
   methods: {
+    isEmpty,
+    validatemobile,
     loadData() {
       this.$axios
         .get('/api/admin/admin-all', {
@@ -157,6 +191,45 @@ export default {
           });
       });
     },
+    add() {
+      let flag = 0;
+      Object.keys(this.form).forEach((key) => {
+        if (this.isEmpty(this.form[key])) {
+          flag = 1;
+        }
+      });
+      if (flag) {
+        this.$message({
+          message: '请完成信息填写',
+          type: 'warning',
+        });
+        flag = 0;
+        return;
+      }
+      if (!this.validatemobile(this.form.phone)) {
+        this.$message({
+          message: '请输入有效的手机号',
+          type: 'warning',
+        });
+        return;
+      }
+      this.$axios.post('/api/admin/add', this.form).then((res) => {
+        if (res.data.code === 'SUCCESS') {
+          this.$message({
+            type: 'success',
+            message: res.data.msg,
+          });
+          this.form = {};
+          this.dialogFormVisible = false;
+          this.loadData();
+        } else {
+          this.$message({
+            message: res.data.msg,
+            type: 'warning',
+          });
+        }
+      });
+    },
   },
   beforeMount() {
     this.loadData();
@@ -170,7 +243,7 @@ export default {
 }
 .toobar {
   display: flex;
-  justify-content: space-between;
+  // justify-content: space-between;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
   .search {
@@ -179,6 +252,9 @@ export default {
       border: none;
     }
   }
+}
+.btn {
+  cursor: pointer;
 }
 .pagination {
   margin-top: 20px;

@@ -11,7 +11,7 @@ import store from './store/store';
 import './style/global.css';
 // 全屏滚动 vue-fullpage.js
 import 'fullpage.js/vendors/scrolloverflow';
-import VueFullpage from 'vue-fullpage.js';
+import VueFullpage from 'vue-fullpage.js'
 // localStorage缓存
 import { Storage } from './utils/storage';
 
@@ -19,6 +19,7 @@ Vue.config.productionTip = false;
 
 Vue.use(ElementUI);
 Vue.use(VueFullpage);
+
 Vue.component('lottie', lottie);
 // 全局挂在axios
 Vue.prototype.$axios = axios;
