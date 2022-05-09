@@ -124,7 +124,6 @@ export default {
       });
       this.$localStorage.removeItem('user');
       this.isLogin = false;
-      this.$router.go(0);
       this.$router.push('/');
     },
   },

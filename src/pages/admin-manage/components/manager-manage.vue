@@ -10,9 +10,26 @@
         ></el-input>
         <el-button icon="el-icon-search" circle @click="search"></el-button>
       </div>
-      <el-button type="primary" @click="dialogFormVisible = true"
+      <el-button
+        type="success"
+        plain
+        @click="dialogFormVisible = true"
+        icon="el-icon-plus"
         >新增</el-button
       >
+      <el-button type="primary" icon="el-icon-download" @click="out"
+        >导出</el-button
+      >
+      <el-upload
+        :action="'/api/admin/import'"
+        :show-file-list="false"
+        accept="xlsx"
+        :on-success="handleExcelImportSuccess"
+        style="display: inline-block"
+        class="import"
+      >
+        <el-button type="primary" plain icon="el-icon-upload2">导入</el-button>
+      </el-upload>
     </div>
     <el-dialog
       title="新增管理员"
@@ -94,7 +111,7 @@ export default {
   data() {
     return {
       pageNum: 1,
-      pageTotal: '',
+      pageTotal: 0,
       input: '',
       tableData: [],
       dialogFormVisible: false,
@@ -230,6 +247,23 @@ export default {
         }
       });
     },
+    out() {
+      window.open('http://localhost:7268/admin/export');
+    },
+    handleExcelImportSuccess(res) {
+      if (res.code === 'SUCCESS') {
+        this.$message({
+          message: res.msg,
+          type: 'success',
+        });
+        this.loadData();
+      } else {
+        this.$message({
+          message: res.msg,
+          type: 'warning',
+        });
+      }
+    },
   },
   beforeMount() {
     this.loadData();
@@ -259,5 +293,8 @@ export default {
 .pagination {
   margin-top: 20px;
   text-align: right;
+}
+.import {
+  margin-left: 10px;
 }
 </style>

@@ -9,6 +9,21 @@
           placeholder="请输入内容"
         ></el-input>
         <el-button icon="el-icon-search" circle @click="search"></el-button>
+        <el-button type="primary" icon="el-icon-download" @click="out"
+          >导出</el-button
+        >
+        <el-upload
+          :action="'/api/student/import'"
+          :show-file-list="false"
+          accept="xlsx"
+          :on-success="handleExcelImportSuccess"
+          style="display: inline-block"
+          class="import"
+        >
+          <el-button type="primary" plain icon="el-icon-upload2"
+            >导入</el-button
+          >
+        </el-upload>
       </div>
     </div>
     <el-table :data="tableData" stripe style="width: 100%">
@@ -71,7 +86,7 @@ export default {
   data() {
     return {
       pageNum: 1,
-      pageTotal: '',
+      pageTotal: 0,
       input: '',
       tableData: [],
     };
@@ -160,10 +175,26 @@ export default {
           });
       });
     },
+    out() {
+      window.open('http://localhost:7268/student/export');
+    },
+    handleExcelImportSuccess(res) {
+      if (res.code === 'SUCCESS') {
+        this.$message({
+          message: res.msg,
+          type: 'success',
+        });
+        this.loadData();
+      } else {
+        this.$message({
+          message: res.msg,
+          type: 'warning',
+        });
+      }
+    },
   },
   beforeMount() {
     this.loadData();
-    this.clipboard();
   },
 };
 </script>
@@ -174,7 +205,7 @@ export default {
 }
 .toobar {
   display: flex;
-  justify-content: space-between;
+  // justify-content: space-between;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
   .search {
@@ -190,5 +221,8 @@ export default {
 .pagination {
   margin-top: 20px;
   text-align: right;
+}
+.import {
+  margin-left: 10px;
 }
 </style>
