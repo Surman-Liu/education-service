@@ -42,14 +42,7 @@
 
 <script>
 const OSS = require('ali-oss');
-const client = new OSS({
-  accessKeyId: 'LTAI5tJXqHPwRVYAUix5pE9Q', // 查看你自己的阿里云KEY
-  accessKeySecret: '2UFEERI6KmbTmaWaFSN8yzb8DjfEKH', // 查看自己的阿里云KEYSECRET
-  bucket: 'space-service', // 你的 OSS bucket 名称
-  region: 'oss-cn-chengdu', // bucket 所在地址，我的是 华东2 杭州
-  cname: true, // 开启自定义域名上传
-  endpoint: 'space-service.oss-cn-chengdu.aliyuncs.com', // 自己的域名
-});
+
 
 export default {
   props: {

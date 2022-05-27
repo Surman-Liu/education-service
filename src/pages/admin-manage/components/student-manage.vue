@@ -176,7 +176,7 @@ export default {
       });
     },
     out() {
-      window.open('http://localhost:7268/student/export');
+      window.open('http://47.113.187.215:7268/student/export');
     },
     handleExcelImportSuccess(res) {
       if (res.code === 'SUCCESS') {
